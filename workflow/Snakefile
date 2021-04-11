@@ -1,18 +1,41 @@
 # The main entry point of your workflow.
 # After configuring, running snakemake -n in a clone of this repository should successfully execute a dry-run of the workflow.
 
+from snakemake.utils import min_version
+min_version("6.0")
+
+import pandas as pd
+import ast
+configfile: "config/config.yaml"
+samples = pd.read_table(config["samples_tsv"], converters={"files": ast.literal_eval}).set_index("sample_name", drop=False)
+wildcard_constraints:
+    sample ="|".join(samples.index.tolist())
 
 report: "report/workflow.rst"
 
 # Allow users to fix the underlying OS via singularity.
 singularity: "docker://continuumio/miniconda3"
 
+#module dna_seq:
+#	snakefile: "https://raw.githubusercontent.com/jensenrichardson/dna-preprocess/main/Snakefile"
+#	config: "config/dna_config.yaml"
+#use rule * from dna_seq
+
+subworkflow dna_preprocess:
+	workdir:
+		"/scratch/07467/jwr2735/dna-preprocess"
+	snakefile:
+		"/scratch/07467/jwr2735/dna-preprocess/Snakefile"
 
 rule all:
-    input:
+    input: expand("11-FilterMutectCalls/{sample}.filtered.vcf", sample=samples.to_dict('index'))
         # The first rule should define the default target files
         # Subsequent target rules can be specified below. They should start with all_*.
+	
 
 
-include: "rules/common.smk"
-include: "rules/other.smk"
+include: "rules/mutect2.smk"
+include: "rules/LearnReadOrientationModel.smk"
+include: "rules/GetPileupSummaries.smk"
+include: "rules/CalculateContamination.smk"
+include: "rules/FilterMutectCalls.smk"

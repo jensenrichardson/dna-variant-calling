@@ -1,4 +1,9 @@
 # This file should contain everything to configure the workflow on a global scale.
 # In case of sample based data, it should be complemented by a samples.tsv file that contains
 # one row per sample. It can be parsed easily via pandas.
+ref_gen: "/work/07467/jwr2735/lonestar/req-files/refGenome/GRCh38.p7.genome.fa"
+samples_tsv: "/scratch/07467/jwr2735/dna-preprocess/samples.tsv"
 samples: "config/samples.tsv"
+germline_resource: "/scratch/07467/jwr2735/hg38_af-only-gnomad.hg38.vcf.gz"
+panel_of_normals: "/scratch/07467/jwr2735/hg38_1000g_pon.hg38.vcf.gz"
+common_variants: "/scratch/07467/jwr2735/hg38_small_exac_common_3.hg38.vcf.gz"
