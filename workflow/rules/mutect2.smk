@@ -16,8 +16,8 @@ configfile: "config/config.yaml"
 
 rule Mutect2:
 	input:
-		bam=dna_preprocess("06-ApplyRecalibration/{sample}.recalibrated.bam"),
-		bai=dna_preprocess("06-ApplyRecalibration/{sample}.recalibrated.bai"),
+		bam="06-ApplyRecalibration/{sample}.recalibrated.bam",
+		bai="06-ApplyRecalibration/{sample}.recalibrated.bai",
 		ref=config["ref_gen"],
 		germline=config["germline_resource"],
 		pon=config["panel_of_normals"]
@@ -29,7 +29,7 @@ rule Mutect2:
 	log:
 		"07-Mutect2/{sample}.log"
 	resources:
-		runtime=lambda wildcards, attempt: 30 + 60 * (attempt+1),
+		runtime=lambda wildcards, attempt: 30 + 60 * (attempt+1) + max(0, 90 * (attempt - 2)),
 		cores=16
 	shell:
 		"OMP_NUM_THREADS={resources.cores} gatk Mutect2 "

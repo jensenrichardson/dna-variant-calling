@@ -1,7 +1,7 @@
 rule GetPileupSummaries:
 	input:
-		bam=dna_preprocess("06-ApplyRecalibration/{sample}.recalibrated.bam"),
-		bai=dna_preprocess("06-ApplyRecalibration/{sample}.recalibrated.bai"),
+		bam="06-ApplyRecalibration/{sample}.recalibrated.bam",
+		bai="06-ApplyRecalibration/{sample}.recalibrated.bai",
 		common=config["common_variants"]
 	output:
 		table="09-GetPileupSummaries/{sample}.pileups.table"

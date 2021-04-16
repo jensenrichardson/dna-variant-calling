@@ -4,6 +4,7 @@
 from snakemake.utils import min_version
 min_version("6.0")
 
+import yaml
 import pandas as pd
 import ast
 configfile: "config/config.yaml"
@@ -21,11 +22,13 @@ singularity: "docker://continuumio/miniconda3"
 #	config: "config/dna_config.yaml"
 #use rule * from dna_seq
 
-subworkflow dna_preprocess:
-	workdir:
-		"/scratch/07467/jwr2735/dna-preprocess"
-	snakefile:
-		"/scratch/07467/jwr2735/dna-preprocess/Snakefile"
+dna_preprocess_config = {}
+with open(config["dna_preprocess_config"]) as dna_preprocess_config_file:
+    dna_preprocess_config = yaml.load(dna_preprocess_config_file, Loader=yaml.FullLoader)
+module DnaPreprocess:
+    snakefile: "https://raw.githubusercontent.com/jensenrichardson/dna-preprocess/main/Snakefile"
+    config: dna_preprocess_config
+use rule * from DnaPreprocess as DnaPreprocess*
 
 rule all:
     input: expand("11-FilterMutectCalls/{sample}.filtered.vcf", sample=samples.to_dict('index'))
